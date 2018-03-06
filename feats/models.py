@@ -42,7 +42,8 @@ class Feat(models.Model):
     full_text = models.TextField()
     goal = models.TextField()
     completion_benefit = models.TextField()
-    suggested_traits = models.ManyToManyField(Trait, blank=True)
+    suggested_traits = models.ManyToManyField(Trait, blank=True,
+                                              related_name='+')
 
     req_dex = models.IntegerField(null=True, default=None)
     req_str = models.IntegerField(null=True, default=None)
@@ -55,11 +56,12 @@ class Feat(models.Model):
     req_lvl = models.IntegerField(null=True, default=None)
 
     req_feats = models.ManyToManyField("self", blank=True, symmetrical=False)
-    req_races = models.ManyToManyField(Race, blank=True)
+    req_races = models.ManyToManyField(Race, blank=True, related_name='+')
     req_skills = models.ManyToManyField(Skill, through="RequiredSkill")
-    req_classes = models.ManyToManyField(Class, blank=True)
-    req_class_features = models.ManyToManyField(ClassFeature, blank=True)
-    req_traits = models.ManyToManyField(Trait, blank=True)
+    req_classes = models.ManyToManyField(Class, blank=True, related_name='+')
+    req_class_features = models.ManyToManyField(ClassFeature, blank=True,
+                                                related_name='+')
+    req_traits = models.ManyToManyField(Trait, blank=True, related_name='+')
 
     caster_lvl = models.IntegerField(null=True, default=None)
     caster_type = models.CharField(max_length=1, choices=MAGIC_TYPES,
