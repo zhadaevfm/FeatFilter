@@ -1,6 +1,7 @@
-import json
+import os
 import re
 
+import django
 import pandas as pd
 
 MYTHIC = 'Mythic'
@@ -29,77 +30,91 @@ class FeatParser(object):
         data_frame = pd.read_csv(path_to_file, sep="\t", index_col="id",
                                  keep_default_na=False)
         records = data_frame.to_dict('records')
-        flat_dict = {}
         for r in records:
-            tmp = self._convert_record(r)
-            flat_dict[tmp['name']] = tmp
+            self._add_to_db(r)
 
-        print(json.dumps(flat_dict['Power Attack'], indent=2))
+    def _add_to_db(self, record):
+        f_name = record['name'].title()
+        f_type = record['type'].title()
 
-    def _convert_record(self, record):
-        result = dict()
-        fields_to_copy = ['name', 'type', 'description', 'benefit', 'normal',
-                          'special', 'source', 'fulltext', 'note', 'goal',
+        if MYTHIC == f_type:
+            f_name = "{} ({})".format(f_name, MYTHIC)
+
+        new_feat = Feat.objects.get_or_create(name=f_name)[0]
+        new_feat.feat_type = FeatType.objects.get_or_create(name=f_type)[0]
+
+        fields_to_copy = ['description', 'benefit', 'normal',
+                          'special', 'source', 'note', 'goal',
                           'completion_benefit']
 
         for f in fields_to_copy:
-            result[f] = record.get(f, None)
+            setattr(new_feat, f, record.get(f, None))
 
-        if MYTHIC == result['type']:
-            result['name'] = "{} ({})".format(result['name'], MYTHIC)
+        new_feat.full_text = record.get('fulltext', None)
 
-        result['suggested_traits'] = self._comma_split(
-            record['suggested_traits'], title=True)
+        for t in self._comma_split(record['suggested_traits']):
+            trait = Trait.objects.get_or_create(name=t.title())[0]
+            new_feat.suggested_traits.add(trait)
 
-        requirements = {
-            "races": self._comma_split(record.get('race_name', None),
-                                       title=True),
-            "feats": self._comma_split(
-                record.get('prerequisite_feats', None), title=True),
-            "as_text": record.get('prerequisites', "").strip('.')
-        }
-        result['requirements'] = requirements
-        requirements.update(
-            self._parse_requirements_text(requirements['as_text']))
+        for r in self._comma_split(record.get('race_name', None)):
+            race = Race.objects.get_or_create(name=r.title())[0]
+            new_feat.req_races.add(race)
+
+        for f in self._comma_split(record.get('prerequisite_feats', None)):
+            feat = Feat.objects.get_or_create(name=f.title())[0]
+            new_feat.req_feats.add(feat)
+
+        new_feat.req_as_text = record.get('prerequisites', "").strip('.')
+
+        self._parse_requirements_text(new_feat)
 
         flag_fields = ['teamwork', 'critical', 'grit', 'style', 'performance',
                        'racial', 'companion_familiar', 'multiples']
-        flags = {x: bool(record.get(x, False)) for x in flag_fields}
-        result['flags'] = flags
+        for field in flag_fields:
+            setattr(new_feat, field, bool(record.get(field, False)))
+        new_feat.save()
 
-        return result
-
-    def _parse_requirements_text(self, req_string):
-        result = {}
-        for s in self._comma_split(req_string):
+    def _parse_requirements_text(self, feat_obj):
+        for s in self._comma_split(feat_obj.req_as_text):
             for key, pattern in NUMBER_REQ_PATTERNS.items():
                 m = pattern.match(s)
                 if m:
-                    result[key] = int(m.group(1))
+                    setattr(feat_obj, key, int(m.group(1)))
             m = SKILL_REQ_PATTERN.match(s)
             if m:
-                result.setdefault("req_skills", {})[m.group(1)] = int(m.group(2))
+                skill = Skill.objects.get_or_create(name=m.group(1).title())[0]
+                RequiredSkill.objects.create(skill=skill,
+                                             feat=feat_obj,
+                                             ranks=int(m.group(2)))
+
             m = CLASS_FEATURE_PATTERN.match(s)
             if m:
-                result.setdefault("req_class_features", []).append(
-                    m.group(1).title())
+                class_feature = ClassFeature.objects.get_or_create(
+                    name=m.group(1).title())[0]
+                feat_obj.req_class_features.add(class_feature)
+
             m = RACIAL_TRAIT_PATTERN.match(s)
             if m:
-                result.setdefault("req_traits", []).append(
-                    m.group(1).title())
+                trait = Trait.objects.get_or_create(name=m.group(1).title())[0]
+                feat_obj.req_traits.add(trait)
+
             m = CLASS_LEVEL_PATTERN.match(s)
             if m:
-                result["req_lvl"] = m.group(1)
-                result.setdefault("req_classes", []).append(m.group(2).title())
-        return result
+                feat_obj.req_lvl = int(m.group(1))
+                req_class = Class.objects.get_or_create(
+                    name=m.group(2).title())[0]
+                feat_obj.req_classes.add(req_class)
 
-    def _comma_split(self, string, title=False):
+    def _comma_split(self, string):
         if not string:
             return []
-        return [p.strip().title() if title else p.strip()
-                for p in string.strip('.').split(',')]
+        return [p.strip() for p in string.strip('.').split(',')]
 
 
 if __name__ == '__main__':
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "FeatFilter.settings")
+    django.setup()
+    from feats.models import *
+
     parser = FeatParser()
     parser.parse("../data/feats-23-03-2014.tsv")

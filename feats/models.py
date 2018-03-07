@@ -4,26 +4,45 @@ from django.db import models
 class FeatType(models.Model):
     name = models.CharField(null=False, max_length=32)
 
-
-class Race(models.Model):
-    name = models.CharField(null=False, max_length=32)
+    def __str__(self):
+        return self.name
 
 
 class Trait(models.Model):
     name = models.CharField(null=False, max_length=32)
 
+    def __str__(self):
+        return self.name
+
+
+class Race(models.Model):
+    name = models.CharField(null=False, max_length=32)
+    traits = models.ManyToManyField(Trait)
+
+    def __str__(self):
+        return self.name
+
 
 class Skill(models.Model):
     name = models.CharField(null=False, max_length=32)
+
+    def __str__(self):
+        return self.name
 
 
 class ClassFeature(models.Model):
     name = models.CharField(null=False, max_length=32)
 
+    def __str__(self):
+        return self.name
+
 
 class Class(models.Model):
     name = models.CharField(null=False, max_length=32)
     features = models.ManyToManyField(ClassFeature)
+
+    def __str__(self):
+        return self.name
 
 
 class Feat(models.Model):
@@ -34,14 +53,15 @@ class Feat(models.Model):
         (DIVINE, "Divine"),
     )
     name = models.CharField(null=False, max_length=64)
-    feat_type = models.ForeignKey(FeatType, on_delete=models.CASCADE)
-    benefit = models.TextField()
-    normal = models.TextField()
+    feat_type = models.ForeignKey(FeatType, on_delete=models.CASCADE,
+                                  null=True)
+    benefit = models.TextField(null=True)
+    normal = models.TextField(null=True)
     special = models.CharField(max_length=64, blank=True)
-    note = models.TextField()
-    full_text = models.TextField()
-    goal = models.TextField()
-    completion_benefit = models.TextField()
+    note = models.TextField(null=True)
+    full_text = models.TextField(null=True)
+    goal = models.TextField(null=True)
+    completion_benefit = models.TextField(null=True)
     suggested_traits = models.ManyToManyField(Trait, blank=True,
                                               related_name='+')
 
@@ -70,6 +90,8 @@ class Feat(models.Model):
     spell_type = models.CharField(max_length=1, choices=MAGIC_TYPES,
                                   blank=True)
 
+    req_as_text = models.TextField(null=True)
+
     teamwork = models.BooleanField(null=False, default=False)
     critical = models.BooleanField(null=False, default=False)
     grit = models.BooleanField(null=False, default=False)
@@ -79,9 +101,17 @@ class Feat(models.Model):
     companion_familiar = models.BooleanField(null=False, default=False)
     multiples = models.BooleanField(null=False, default=False)
 
+    def __str__(self):
+        return self.name
+
 
 class RequiredSkill(models.Model):
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE,
                               related_name='+')
     feat = models.ForeignKey(Feat, on_delete=models.CASCADE)
     ranks = models.IntegerField(default=0, null=False)
+
+    def __str__(self):
+        return "{} -> {}({})".format(self.feat.name,
+                                     self.skill.name,
+                                     self.ranks)
