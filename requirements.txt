@@ -1,4 +1,4 @@
 pandas
 django
 djangorestframework
-django-bootstrap-static
+django-bootstrap4

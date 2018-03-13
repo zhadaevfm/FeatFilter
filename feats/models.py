@@ -56,6 +56,7 @@ class Feat(models.Model):
     feat_type = models.ForeignKey(FeatType, on_delete=models.CASCADE,
                                   null=True)
     benefit = models.TextField(null=True)
+    description = models.TextField(null=True)
     normal = models.TextField(null=True)
     special = models.CharField(max_length=64, blank=True)
     note = models.TextField(null=True)

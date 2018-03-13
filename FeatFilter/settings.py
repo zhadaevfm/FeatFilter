@@ -37,8 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap',
-    'fontawesome',
+    'bootstrap4',
     'rest_framework',
     'feats.apps.FeatsConfig'
 ]
