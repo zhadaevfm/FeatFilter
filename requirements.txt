@@ -1,2 +1,4 @@
 pandas
+django
 djangorestframework
+django-bootstrap-static
