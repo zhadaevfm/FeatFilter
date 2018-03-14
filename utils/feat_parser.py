@@ -50,7 +50,7 @@ class FeatParser(object):
         for f in fields_to_copy:
             setattr(new_feat, f, record.get(f, None))
 
-        new_feat.full_text = record.get('fulltext', None)
+        new_feat.html_text = record.get('fulltext', None)
 
         for t in self._comma_split(record['suggested_traits']):
             trait = Trait.objects.get_or_create(name=t.title())[0]

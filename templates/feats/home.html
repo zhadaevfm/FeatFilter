@@ -4,28 +4,66 @@
 {% block title %}Feat Filter (Alpha){% endblock %}
 
 {% block content %}
+    <form action="#" method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="{{ char_form.ch_level.id_for_label }}">{{ char_form.ch_level.label }}</label>
+                <input type="number"
+                       class="form-control"
+                       id="{{ char_form.ch_level.id_for_label }}"
+                       name="{{ char_form.ch_level.html_name }}"
+                       value="{{ char_form.ch_level.value }}">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ char_form.ch_bab.id_for_label }}">{{ char_form.ch_bab.label }}</label>
+                <input type="number"
+                       class="form-control"
+                       id="{{ char_form.ch_bab.id_for_label }}"
+                       name="{{ char_form.ch_bab.html_name }}"
+                       value="{{ char_form.ch_bab.value }}">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="{{ char_form.ch_class.id_for_label }}">{{ char_form.ch_class.label }}</label>
+                <select class="form-control"
+                        name="{{ char_form.ch_class.html_name }}"
+                        id="{{ char_form.ch_class.id_for_label }}">
+                    {% for option in char_form.ch_class %}
+                        {{ option }}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        {#        <div class="form-check">#}
+        {#            <input type="checkbox" class="form-check-input" id="exampleCheck1">#}
+        {#            <label class="form-check-label" for="exampleCheck1">Check me out</label>#}
+        {#        </div>#}
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
 
     {% block feats %}
         <div class="main">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-5">
-                        <div class="card">
-                            <div class="list-group list-group-flush" id="feat-list">
-                                {% for feat in feat_list %}
-                                    <a href="#"
-                                       class="list-group-item list-group-item-action flex-column align-items-start">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <h5 class="mb-1">{{ feat.name }}</h5>
-                                            <small>{{ feat.feat_type.name }}</small>
-                                        </div>
-                                        <small class="mb-1">{{ feat.description }}</small>
-                                    </a>
-                                {% endfor %}
-                            </div>
+                        <div class="list-group list-group-flush flex-column" id="feat-list"
+                             style="overflow-y: auto; max-height: 75vh">
+                            {% for feat in feat_list %}
+                                <a href="#"
+                                   class="feat-item list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ feat.name }}</h5>
+                                        <small>{{ feat.feat_type.name }}</small>
+                                    </div>
+                                    <small class="mb-1">{{ feat.description }}</small>
+                                    <input class="feat-id" hidden="hidden" value="{{ feat.pk }}">
+                                </a>
+                            {% endfor %}
                         </div>
+
                     </div>
-                    <div class="col-">
+                    <div class="col-7">
                         <div id="feat-details">
                             Some details
                         </div>
@@ -36,6 +74,21 @@
 
 
     {% endblock %}
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".feat-item").click(function () {
+                var featId = $(this).find(".feat-id")[0].value;
+                $.getJSON("/feats/api/feats/" + featId + "?format=json", function (json) {
+                    $("#feat-details").html(json.html_text)
+                });
+
+            })
+
+        })
+    </script>
 
 {% endblock %}
 

@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from rest_framework import pagination
 from rest_framework import viewsets
 
+from feats.forms import CharacterForm
 from feats.models import Feat
 from feats.serializers import FeatDetailsSerializer
 from feats.serializers import FeatListSerializer
@@ -17,7 +18,12 @@ class HomePageView(TemplateView):
                                        'just alpha version of Feat Filter. '
                                        'Have Fun!')
         context['feat_list'] = Feat.objects.all()
+        context['char_form'] = kwargs.pop('char_form', CharacterForm())
         return context
+
+    def post(self, request, *args, **kwargs):
+        kwargs['char_form'] = CharacterForm(request.POST)
+        return self.get(request, *args, **kwargs)
 
 
 class FeatViewSet(viewsets.ReadOnlyModelViewSet):

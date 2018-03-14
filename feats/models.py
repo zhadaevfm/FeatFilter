@@ -60,7 +60,7 @@ class Feat(models.Model):
     normal = models.TextField(null=True)
     special = models.CharField(max_length=64, blank=True)
     note = models.TextField(null=True)
-    full_text = models.TextField(null=True)
+    html_text = models.TextField(null=True)
     goal = models.TextField(null=True)
     completion_benefit = models.TextField(null=True)
     suggested_traits = models.ManyToManyField(Trait, blank=True,

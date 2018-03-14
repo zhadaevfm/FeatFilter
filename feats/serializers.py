@@ -12,6 +12,6 @@ class FeatListSerializer(serializers.ModelSerializer):
 class FeatDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feat
-        fields = ('pk', 'name', 'feat_type', 'benefit', 'full_text',
+        fields = ('pk', 'name', 'feat_type', 'benefit', 'html_text',
                   'req_feats', 'req_traits')
         depth = 1
