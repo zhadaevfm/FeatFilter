@@ -7,6 +7,7 @@ from feats.forms import CharacterForm
 from feats.models import Feat
 from feats.serializers import FeatDetailsSerializer
 from feats.serializers import FeatListSerializer
+from feats.utils import FeatFilter
 
 
 class HomePageView(TemplateView):
@@ -17,8 +18,20 @@ class HomePageView(TemplateView):
         messages.warning(self.request, 'Hello there! Please aware that it\'s '
                                        'just alpha version of Feat Filter. '
                                        'Have Fun!')
-        context['feat_list'] = Feat.objects.all()
-        context['char_form'] = kwargs.pop('char_form', CharacterForm())
+
+        character_form = kwargs.pop('char_form', None)
+        feats_qs = Feat.objects.filter(feat_type__isnull=False)
+
+        if character_form:
+            if character_form.is_valid():
+                feats_qs = FeatFilter.apply_form(
+                    feats_qs, character_form)
+        else:
+            character_form = CharacterForm()
+
+        context['char_form'] = character_form
+        context['feat_list'] = feats_qs.order_by('name')
+
         return context
 
     def post(self, request, *args, **kwargs):

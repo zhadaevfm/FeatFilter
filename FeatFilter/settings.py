@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap4',
+    'bootstrap3',
     'rest_framework',
     'feats.apps.FeatsConfig'
 ]
@@ -125,3 +125,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
+
+BOOTSTRAP3 = {
+    'javascript_in_head': True,
+    'include_jquery': True
+}

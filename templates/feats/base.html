@@ -1,9 +1,10 @@
 {% extends 'feats/bootstrap.html' %}
-{% load bootstrap4 %}
+{% load bootstrap3 %}
 
-{% block bootstrap4_content %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+{% block bootstrap3_content %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/js/bootstrap-multiselect.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.14/css/bootstrap-multiselect.css"
+          rel="stylesheet" type="text/css">
     <div class="container">
         <h1>{% block title %}(no title){% endblock %}</h1>
 
