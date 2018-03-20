@@ -3,22 +3,21 @@ WIP
 
 ##Quickstart:
 * Clone repository or download source
-* Install requirements\
+* Install requirements
 <code>
 $ pip install -r requirements.txt
 </code>
-* Init DB\
+* Init DB
 <code>
 $ python manage.py migrate
 </code>
- * Fill DB\
+ * Fill DB
  <code>
  $ cd utils
- </code>\
- <code>
+ 
  $ python feat_parser.py
  </code>
- * Start server\
+ * Start server
  <code>
  $ python manage.py runserver
  </code>
