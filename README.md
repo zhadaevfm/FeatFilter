@@ -1,7 +1,7 @@
 # FeatFilter
 WIP
 
-##Quickstart:
+## Quickstart:
 * Clone repository or download source
 * Install requirements
 <code>
