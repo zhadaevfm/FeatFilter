@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 
 import django
 import pandas as pd
@@ -112,6 +113,7 @@ class FeatParser(object):
 
 
 if __name__ == '__main__':
+    sys.path.append('..')
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "FeatFilter.settings")
     django.setup()
     from feats.models import *
