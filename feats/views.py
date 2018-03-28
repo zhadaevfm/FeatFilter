@@ -31,6 +31,7 @@ class HomePageView(TemplateView):
 
         context['char_form'] = character_form
         context['feat_list'] = feats_qs.order_by('name')
+        context['feats_total'] = feats_qs.count()
 
         return context
 

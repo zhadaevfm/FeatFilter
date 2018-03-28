@@ -8,7 +8,7 @@
             <form action="#" method="post" id="feat-filter-form">
                 {% csrf_token %}
                 <div class="form-row">
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_lvl.id_for_label }}">{{ char_form.ch_lvl.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -16,7 +16,7 @@
                                name="{{ char_form.ch_lvl.html_name }}"
                                value="{{ char_form.ch_lvl.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_bab.id_for_label }}">{{ char_form.ch_bab.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -24,7 +24,15 @@
                                name="{{ char_form.ch_bab.html_name }}"
                                value="{{ char_form.ch_bab.value }}">
                     </div>
-                    <div class="form-group col-md-3 col-xs-3">
+                    <div class="form-group col-md-2 col-xs-2">
+                        <label for="{{ char_form.ch_c_lvl.id_for_label }}">{{ char_form.ch_c_lvl.label }}</label>
+                        <input type="number"
+                               class="form-control"
+                               id="{{ char_form.ch_c_lvl.id_for_label }}"
+                               name="{{ char_form.ch_c_lvl.html_name }}"
+                               value="{{ char_form.ch_c_lvl.value }}">
+                    </div>
+                    <div class="form-group col-md-2 col-xs-2">
                         <label for="{{ char_form.ch_class.id_for_label }}">{{ char_form.ch_class.label }}</label>
                         <select class="form-control"
                                 name="{{ char_form.ch_class.html_name }}"
@@ -34,12 +42,25 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group col-md-3 col-xs-3">
+                    <div class="form-group col-md-2 col-xs-2">
                         <label for="{{ char_form.ch_race.id_for_label }}">{{ char_form.ch_race.label }}</label>
                         <select class="form-control"
                                 name="{{ char_form.ch_race.html_name }}"
                                 id="{{ char_form.ch_race.id_for_label }}">
                             {% for option in char_form.ch_race %}
+                                {{ option }}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2 col-xs-2">
+                        <label for="{{ char_form.ch_class_features.id_for_label }}">
+                            {{ char_form.ch_class_features.label }}
+                        </label>
+                        <select class="form-control m-select"
+                                multiple="multiple"
+                                name="{{ char_form.ch_class_features.html_name }}"
+                                id="{{ char_form.ch_class_features.id_for_label }}">
+                            {% for option in char_form.ch_class_features %}
                                 {{ option }}
                             {% endfor %}
                         </select>
@@ -88,7 +109,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_str.id_for_label }}">{{ char_form.ch_str.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -96,7 +117,7 @@
                                name="{{ char_form.ch_str.html_name }}"
                                value="{{ char_form.ch_str.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_dex.id_for_label }}">{{ char_form.ch_dex.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -104,7 +125,7 @@
                                name="{{ char_form.ch_dex.html_name }}"
                                value="{{ char_form.ch_dex.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_con.id_for_label }}">{{ char_form.ch_con.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -112,7 +133,7 @@
                                name="{{ char_form.ch_con.html_name }}"
                                value="{{ char_form.ch_con.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_int.id_for_label }}">{{ char_form.ch_int.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -120,7 +141,7 @@
                                name="{{ char_form.ch_int.html_name }}"
                                value="{{ char_form.ch_int.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_wis.id_for_label }}">{{ char_form.ch_wis.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -128,7 +149,7 @@
                                name="{{ char_form.ch_wis.html_name }}"
                                value="{{ char_form.ch_wis.value }}">
                     </div>
-                    <div class="form-group col-md-2 col-xs-2">
+                    <div class="form-group col-md-1 col-xs-1">
                         <label for="{{ char_form.ch_cha.id_for_label }}">{{ char_form.ch_cha.label }}</label>
                         <input type="number"
                                class="form-control"
@@ -156,9 +177,9 @@
         <div class="main panel">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-5 col-xs-5">
-                        <div class="list-group list-group-flush flex-column" id="feat-list"
-                             style="overflow-y: auto; max-height: 65vh">
+                    <div class="col-md-5 col-xs-5 panel panel-primary">
+                        <div class="list-group list-group-flush flex-column panel-body" id="feat-list"
+                             style="overflow-y: auto; max-height: 60vh">
                             {% for feat in feat_list %}
                                 <a href="#"
                                    class="feat-item list-group-item list-group-item-action flex-column align-items-start">
@@ -171,7 +192,9 @@
                                 </a>
                             {% endfor %}
                         </div>
-
+                        <div class="panel-footer ">
+                            <small>Total: {{ feats_total }}</small>
+                        </div>
                     </div>
                     <div class="col-md-7 col-xs-7">
                         <div id="feat-details">

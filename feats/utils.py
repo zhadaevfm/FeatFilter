@@ -1,11 +1,12 @@
 from django.db.models import Q
 
-from feats.models import Feat, FeatType
+from feats.models import Feat, FeatType, Trait, ClassFeature
 
 
 class FeatFilter:
     numeric_fields = (
         ('ch_lvl', 'req_lvl'),
+        ('ch_c_lvl', 'caster_lvl'),
         ('ch_bab', 'req_bab'),
         ('ch_str', 'req_str'),
         ('ch_dex', 'req_dex'),
@@ -25,6 +26,7 @@ class FeatFilter:
         feats_qs = cls._filter_by_feat_type(feats_qs, form_data)
         feats_qs = cls._filter_by_numeric_fields(feats_qs, form_data)
         feats_qs = cls._filter_by_class_and_race(feats_qs, form_data)
+        feats_qs = cls._filter_by_class_features(feats_qs, form_data)
         feats_qs = cls._filter_by_feats_and_traits(feats_qs, form_data)
         return feats_qs
 
@@ -59,9 +61,8 @@ class FeatFilter:
             feats_qs = feats_qs.exclude(req_feats__in=ch_feats_qs).distinct()
 
         if cleaned_data.get('ch_traits'):
-            feats_qs = feats_qs.filter(
-                Q(req_traits=None) |
-                Q(req_traits__in=cleaned_data['ch_traits']))
+            ch_traits_qs = Trait.objects.exclude(id__in=cleaned_data['ch_traits']).distinct()
+            feats_qs = feats_qs.exclude(req_traits__in=ch_traits_qs).distinct()
 
         return feats_qs
 
@@ -70,4 +71,11 @@ class FeatFilter:
         if cleaned_data.get('feat_type'):
             types_qs = FeatType.objects.exclude(id__in=cleaned_data['feat_type']).distinct()
             feats_qs = feats_qs.exclude(feat_type__in=types_qs).distinct()
+        return feats_qs
+
+    @classmethod
+    def _filter_by_class_features(cls, feats_qs, cleaned_data):
+        if cleaned_data.get('ch_class_features'):
+            types_qs = ClassFeature.objects.exclude(id__in=cleaned_data['ch_class_features']).distinct()
+            feats_qs = feats_qs.exclude(req_class_features__in=types_qs).distinct()
         return feats_qs
